@@ -128,6 +128,38 @@ class KnowledgeBase(object):
         printv("Retracting {!r}", 0, verbose, [fact_or_rule])
         ####################################################
         # Student code goes here
+
+        # wasn't able to get it finished
+
+
+    #     if isinstance(fact_or_rule,Fact):
+    #         for f in self.facts:
+    #             if fact_or_rule.statement == f.statement:
+    #                 self.remove_helper(fact_or_rule)
+    #
+    #
+    #
+    #
+    # def remove_helper(self,fact_or_rule):
+    #
+    #     if isinstance(fact_or_rule,Fact):
+    #         if len(fact_or_rule.supported_by) == 0:
+    #
+    #
+    #         elif len(fact_or_rule.supported_by) > 0:
+    #             fact_or_rule.asserted = False
+    #
+    #     elif isinstance(fact_or_rule, Rule):
+    #         if len(fact_or_rule.supported_by) == 0:
+    #
+    #
+    #         elif len(fact_or_rule.supported_by) > 0:
+    #             fact_or_rule.asserted = False
+
+
+
+
+
         
 
 class InferenceEngine(object):
@@ -140,9 +172,42 @@ class InferenceEngine(object):
             kb (KnowledgeBase) - A KnowledgeBase
 
         Returns:
-            Nothing            
+            Nothing
         """
         printv('Attempting to infer from {!r} and {!r} => {!r}', 1, verbose,
             [fact.statement, rule.lhs, rule.rhs])
         ####################################################
-        # Student code goes here
+        #Student code goes here
+
+        #First see if given fact and the first element of the lhs matches
+        bindings = match(fact.statement,rule.lhs[0])
+        if bindings:
+            # if lhs has only one statement bind rhs with the bindings from fact
+            # to produce corresponding statement and lhs then construct supported_by
+            # list of the fact and the rule then append new_fact to supports_fact field of
+            # the rule and the fact and to the existing kb
+            if len(rule.lhs) == 1:
+                new_statement = instantiate(rule.rhs,bindings);
+                new_fact = Fact(new_statement,[[fact,rule]]);
+                kb.kb_add(new_fact);
+                fact.supports_facts.append(new_fact);
+                rule.supports_facts.append(new_fact);
+            # if lhs has more than one statements excluding the first element of lhs,
+            # produce corresponding statements for the rest of the lhs. Then construct a
+            # new rule and lastly add new_rule to the kb,fact,and the rule.
+            elif len(rule.lhs) > 1:
+                rhs_statement = instantiate(rule.rhs,bindings);
+                lhs_statement = [];
+                for element in rule.lhs[1:]:
+                    lhs_statement.append(instantiate(element,bindings))
+                new_rule = Rule([lhs_statement,rhs_statement],[[fact,rule]]);
+                kb.kb_add(new_rule);
+                fact.supports_rules.append(new_rule);
+                rule.supports_rules.append(new_rule);
+
+
+
+
+
+
+
