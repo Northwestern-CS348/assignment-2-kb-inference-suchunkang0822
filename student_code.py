@@ -129,32 +129,63 @@ class KnowledgeBase(object):
         ####################################################
         # Student code goes here
 
-        # wasn't able to get it finished
+        # Check and see if fact_or_rule is a Fact
+        # and if fact_and_rule is in the kb,
+        # use _get_fact method to replace fact_or_rule
+        # with the one existing in kb to pass it on to the
+        # helper function 
+        if isinstance(fact_or_rule,Fact):
+            if fact_or_rule in self.facts:
+                fact_or_rule = self._get_fact(fact_or_rule)
+                self.retract_helper(fact_or_rule)
 
 
-    #     if isinstance(fact_or_rule,Fact):
-    #         for f in self.facts:
-    #             if fact_or_rule.statement == f.statement:
-    #                 self.remove_helper(fact_or_rule)
-    #
-    #
-    #
-    #
-    # def remove_helper(self,fact_or_rule):
-    #
-    #     if isinstance(fact_or_rule,Fact):
-    #         if len(fact_or_rule.supported_by) == 0:
-    #
-    #
-    #         elif len(fact_or_rule.supported_by) > 0:
-    #             fact_or_rule.asserted = False
-    #
-    #     elif isinstance(fact_or_rule, Rule):
-    #         if len(fact_or_rule.supported_by) == 0:
-    #
-    #
-    #         elif len(fact_or_rule.supported_by) > 0:
-    #             fact_or_rule.asserted = False
+    # helper function to the kb_retract.
+    def retract_helper(self,fact_or_rule):
+        # If the fact_or_rule is a Fact and is unsupported, go
+        # through the list of other facts it supports by going through
+        # its 'supports_facts'.Then from a fact from its 'supports_facts', go through the 'supported_by'
+        # and see if it contains fact_or_rule, which needs to be removed.
+        # If so, remove that whole element from 'supported_by' which contains fact_or_rule.
+        # Apply same procedures to the 'supported_by_rule' as well.
+        # Do so by recursively in order to go through every facts and rules that are associated with fact_or_rule.
+        # After all of the associations with fact_or_rule is wiped clean, then delete fact_or_rule
+        # from the kb. If the fact_or_rule was supported to begin with. If so,
+        # set fac_or_rule.asserted to False since it is supported.
+        if isinstance(fact_or_rule,Fact):
+            if len(fact_or_rule.supported_by) == 0:
+                for f in fact_or_rule.supports_facts:
+                    for fr in f.supported_by:
+                        if fact_or_rule in fr:
+                            f.supported_by.remove(fr)
+                    self.retract_helper(f)
+                for r in fact_or_rule.supports_rules:
+                    for fr in r.suppored_by:
+                        if fact_or_rule in fr:
+                            r.suppored_by.remove(fr)
+                    self.retract_helper(r)
+                self.facts.remove(fact_or_rule)
+            elif len(fact_or_rule.supported_by) > 0:
+                fact_or_rule.asserted = False;
+
+        # If the fact_or_rule is asserted, you can't delete it. If not, check
+        # if it is supported. If not go through the same procedure as above.
+        if isinstance(fact_or_rule,Rule):
+            if not fact_or_rule.asserted:
+                if len(fact_or_rule.supported_by) == 0:
+                    for f in fact_or_rule.supports_facts:
+                        for fr in f.supported_by:
+                            if fact_or_rule in fr:
+                                f.supported_by.remove(fr)
+                        self.retract_helper(f)
+                    for r in fact_or_rule.supports_rules:
+                        for fr in r.suppored_by:
+                            if fact_or_rule in fr:
+                                r.suppored_by.remove(fr)
+                        self.retract_helper(r)
+                    self.rules.remove(fact_or_rule)
+                elif len(fact_or_rule.supported_by) > 0:
+                    fact_or_rule.asserted = False;
 
 
 
