@@ -171,7 +171,9 @@ class KnowledgeBase(object):
                 self.facts.remove(fact_or_rule)
 
         # If the fact_or_rule is asserted, you can't delete it. If not, check
-        # if it is supported. If not go through the same procedure as above.
+        # if it is supported. If so, set fact_or_rule.asserted as False.
+        # If fact_or_rule is not supported,
+        # go through the same procedure as above.
         if isinstance(fact_or_rule,Rule):
             if not fact_or_rule.asserted:
                 if len(fact_or_rule.supported_by) > 0:
