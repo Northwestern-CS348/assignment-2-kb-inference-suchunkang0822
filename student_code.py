@@ -147,7 +147,8 @@ class KnowledgeBase(object):
             # If the fact_or_rule is supported to begin with,
             # set fac_or_rule.asserted to False since it is supported.
             if len(fact_or_rule.supported_by) > 0:
-                fact_or_rule.asserted = False;
+                if fact_or_rule.asserted:
+                    fact_or_rule.asserted = False;
             # If the fact_or_rule is unsupported, go
             # through the list of other facts it supports by going through
             # its 'supports_facts'.Then from a fact from its 'supports_facts', go through the 'supported_by'
@@ -164,9 +165,9 @@ class KnowledgeBase(object):
                             f.supported_by.remove(fr)
                     self.retract_helper(f)
                 for r in fact_or_rule.supports_rules:
-                    for fr in r.suppored_by:
+                    for fr in r.supported_by:
                         if fact_or_rule in fr:
-                            r.suppored_by.remove(fr)
+                            r.supported_by.remove(fr)
                     self.retract_helper(r)
                 self.facts.remove(fact_or_rule)
 
@@ -185,9 +186,9 @@ class KnowledgeBase(object):
                                 f.supported_by.remove(fr)
                         self.retract_helper(f)
                     for r in fact_or_rule.supports_rules:
-                        for fr in r.suppored_by:
+                        for fr in r.supported_by:
                             if fact_or_rule in fr:
-                                r.suppored_by.remove(fr)
+                                r.supported_by.remove(fr)
                         self.retract_helper(r)
                     self.rules.remove(fact_or_rule)
 
@@ -240,6 +241,7 @@ class InferenceEngine(object):
                 kb.kb_add(new_rule);
                 fact.supports_rules.append(new_rule);
                 rule.supports_rules.append(new_rule);
+
 
 
 
